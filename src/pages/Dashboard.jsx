@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api, label } from '../api.js';
+import { api } from '../api.js';
 import { StatCard } from '../components.jsx';
 
 export default function Dashboard({ setTitle }) {
@@ -14,7 +14,6 @@ export default function Dashboard({ setTitle }) {
 
   if (error) return <div className="alert error">{error}</div>;
   if (!d) return <div className="muted">Loading…</div>;
-  const max = Math.max(1, ...d.byStage.map((s) => s.count));
   const low = d.boid.available < d.boidAlertBelow;
 
   return (
@@ -22,7 +21,7 @@ export default function Dashboard({ setTitle }) {
       <div className="stat-grid">
         <StatCard title="Total Applications" value={d.apps.total} sub={`${d.apps.today} today`} onClick={() => navigate('/clients')} />
         <StatCard title="Completed (eSigned)" value={d.apps.completed} tone="green" onClick={() => navigate('/clients?status=ESIGNED')} />
-        <StatCard title="Awaiting eSign" value={d.apps.awaiting_esign} tone="amber" onClick={() => navigate('/need-attention')} />
+        <StatCard title="Awaiting eSign" value={d.apps.awaiting_esign} tone="amber" onClick={() => navigate('/clients?status=IN_PROGRESS')} />
         <StatCard title="In Progress" value={d.apps.in_progress} onClick={() => navigate('/clients?status=IN_PROGRESS')} />
       </div>
 
@@ -38,22 +37,6 @@ export default function Dashboard({ setTitle }) {
           <a onClick={() => navigate('/upload')} className="link">Upload more</a>
         </div>
       )}
-
-      <h3 className="section-title">Applications by stage</h3>
-      <div className="card">
-        <p className="muted small">Last completed step of each application.</p>
-        <div className="bars">
-          {d.byStage.map((s) => (
-            <button key={s.stage} className="bar-row" onClick={() => navigate(`/clients?stage=${s.stage}`)}>
-              <span className="bar-label">{label(s.stage)}</span>
-              <span className="bar-track">
-                <span className="bar-fill" style={{ width: `${(s.count / max) * 100}%` }} />
-              </span>
-              <span className="bar-value">{s.count}</span>
-            </button>
-          ))}
-        </div>
-      </div>
     </>
   );
 }

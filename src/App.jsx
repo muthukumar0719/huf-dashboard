@@ -1,7 +1,7 @@
 import { useEffect, useState, createContext, useContext } from 'react';
 import { Routes, Route, Navigate, NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutGrid, Users, AlertTriangle, CreditCard, Upload as UploadIcon, UserCog, Sun, Moon, LogOut, KeyRound, Menu, X,
+  LayoutGrid, Users, CreditCard, Upload as UploadIcon, UserCog, Sun, Moon, LogOut, KeyRound, Menu, X,
 } from 'lucide-react';
 import { api, setUnauthorizedHandler } from './api.js';
 import Login from './pages/Login.jsx';
@@ -9,7 +9,6 @@ import ChangePassword from './pages/ChangePassword.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Clients from './pages/Clients.jsx';
 import ClientDetails from './pages/ClientDetails.jsx';
-import NeedAttention from './pages/NeedAttention.jsx';
 import Payments from './pages/Payments.jsx';
 import Upload from './pages/Upload.jsx';
 import UserManagement from './pages/UserManagement.jsx';
@@ -71,7 +70,6 @@ export default function App() {
 const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutGrid, end: true },
   { to: '/clients', label: 'Clients', icon: Users },
-  { to: '/need-attention', label: 'Need Attention', icon: AlertTriangle },
   { to: '/payments', label: 'Payments', icon: CreditCard },
   { to: '/upload', label: 'Upload', icon: UploadIcon },
   { to: '/users', label: 'User Management', icon: UserCog, role: 'SUPER_ADMIN' },
@@ -132,7 +130,6 @@ function Shell() {
             <Route path="/" element={<Dashboard setTitle={setTitle} />} />
             <Route path="/clients" element={<Clients setTitle={setTitle} />} />
             <Route path="/clients/:id" element={<ClientDetails setTitle={setTitle} />} />
-            <Route path="/need-attention" element={<NeedAttention setTitle={setTitle} />} />
             <Route path="/payments" element={<Payments setTitle={setTitle} />} />
             <Route path="/upload" element={<Upload setTitle={setTitle} />} />
             <Route path="/change-password" element={<ChangePassword setTitle={setTitle} />} />

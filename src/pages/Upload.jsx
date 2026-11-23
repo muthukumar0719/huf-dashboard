@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Upload as UploadIcon, FileSpreadsheet, X } from 'lucide-react';
-import { api, qs, fmtDateTime } from '../api.js';
-import { Badge, Pager, Empty, na } from '../components.jsx';
+import { api } from '../api.js';
 import { useAuth } from '../App.jsx';
 
 export default function Upload({ setTitle }) {
@@ -12,16 +11,9 @@ export default function Upload({ setTitle }) {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
-  const [list, setList] = useState(null);
-  const [filter, setFilter] = useState({ status: '', search: '', page: 1 });
-  const [reload, setReload] = useState(0);
   const input = useRef(null);
 
   useEffect(() => setTitle('Upload'), [setTitle]);
-  useEffect(() => {
-    const t = setTimeout(() => api(`/api/boid?${qs(filter)}`).then(setList).catch((e) => setError(e.message)), 250);
-    return () => clearTimeout(t);
-  }, [filter, reload]);
 
   const pick = (f) => {
     setResult(null);
@@ -40,20 +32,10 @@ export default function Upload({ setTitle }) {
       setResult(await api('/api/boid/upload', { method: 'POST', form }));
       setFile(null);
       if (input.current) input.current.value = '';
-      setReload((n) => n + 1);
     } catch (e) {
       setError(e.message);
     } finally {
       setBusy(false);
-    }
-  };
-
-  const setStatus = async (row, status) => {
-    try {
-      await api(`/api/boid/${row.id}`, { method: 'PATCH', body: { status } });
-      setReload((n) => n + 1);
-    } catch (e) {
-      setError(e.message);
     }
   };
 
@@ -129,56 +111,7 @@ export default function Upload({ setTitle }) {
           </div>
         </div>
       )}
-
-      <h3 className="section-title">BOID stock</h3>
-      <div className="card filters">
-        <input className="grow" placeholder="Search BOID or client code" value={filter.search} onChange={(e) => setFilter({ ...filter, search: e.target.value, page: 1 })} />
-        <select value={filter.status} onChange={(e) => setFilter({ ...filter, status: e.target.value, page: 1 })}>
-          <option value="">All Statuses</option>
-          <option value="AVAILABLE">Available</option>
-          <option value="USED">Used</option>
-          <option value="BLOCKED">Blocked</option>
-        </select>
-      </div>
-      <div className="card table-card">
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>BOID</th>
-                <th>Status</th>
-                <th>Client Code</th>
-                <th>Allotted At</th>
-                <th>Source File</th>
-                <th>Uploaded By</th>
-                <th>Uploaded At</th>
-                {user.role === 'SUPER_ADMIN' && <th />}
-              </tr>
-            </thead>
-            <tbody>
-              {list?.rows.map((r) => (
-                <tr key={r.id}>
-                  <td className="mono">{r.boid}</td>
-                  <td><Badge value={r.status} /></td>
-                  <td>{na(r.client_code)}</td>
-                  <td>{r.allotted_at ? fmtDateTime(r.allotted_at) : 'N/A'}</td>
-                  <td>{na(r.source_file_name)}</td>
-                  <td>{na(r.uploaded_by)}</td>
-                  <td>{fmtDateTime(r.uploaded_at)}</td>
-                  {user.role === 'SUPER_ADMIN' && (
-                    <td>
-                      {r.status === 'AVAILABLE' && <button className="btn small" onClick={() => setStatus(r, 'BLOCKED')}>Block</button>}
-                      {r.status === 'BLOCKED' && <button className="btn small" onClick={() => setStatus(r, 'AVAILABLE')}>Unblock</button>}
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {list && !list.rows.length && <Empty>No BOIDs yet.</Empty>}
-        </div>
-        {list && <Pager page={list.page} pageSize={list.pageSize} total={list.total} onPage={(p) => setFilter({ ...filter, page: p })} />}
-      </div>
+      {!canUpload && <div className="card muted">Only Admins can upload BOIDs.</div>}
     </>
   );
 }
