@@ -14,7 +14,6 @@ export default function Dashboard({ setTitle }) {
 
   if (error) return <div className="alert error">{error}</div>;
   if (!d) return <div className="muted">Loading…</div>;
-  const low = d.boid.available < d.boidAlertBelow;
 
   return (
     <>
@@ -31,12 +30,6 @@ export default function Dashboard({ setTitle }) {
         <StatCard title="Used" value={d.boid.used} tone="red" />
         <StatCard title="Available" value={d.boid.available} tone="green" />
       </div>
-      {low && (
-        <div className="alert warn">
-          Only {d.boid.available} BOIDs are available (alert below {d.boidAlertBelow}).{' '}
-          <a onClick={() => navigate('/upload')} className="link">Upload more</a>
-        </div>
-      )}
     </>
   );
 }
