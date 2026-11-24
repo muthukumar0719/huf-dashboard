@@ -8,7 +8,7 @@
   --hero-gradient: linear-gradient(90deg, #0b1447 0%, #1c1d5e 45%, #7b3a62 100%);
   --side-gradient: radial-gradient(120% 60% at 0% 0%, #1530c8 0%, transparent 60%), linear-gradient(180deg, #0d1a8a 0%, #0b1250 50%, #0a0f33 100%);
 
-  --bg: #f2f4fb;
+  --bg: #ffffff;
   --surface: #ffffff;
   --surface-2: #f4f6fe;
   --border: #e3e6f3;
